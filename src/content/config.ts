@@ -7,7 +7,7 @@ const projects = defineCollection({
     description: z.string(),
     tags: z.array(z.string()),
     status: z.enum(['live', 'wip', 'concept']),
-    url: z.string().optional(),
+    url: z.string().nullable().optional(),
     tech: z.array(z.string()).optional(),
     order: z.number().optional(),
   }),
