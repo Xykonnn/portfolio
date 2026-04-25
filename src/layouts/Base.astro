@@ -1,0 +1,44 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Vibe-coded tools and small projects by xykonnn.' } = Astro.props;
+const pathname = Astro.url.pathname;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={description} />
+  <title>{title} — xykonnn</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+</head>
+<body>
+
+  <div class="top-border"></div>
+
+  <nav class="site-nav">
+    <div class="inner">
+      <a href="/" class="logo">xykonnn</a>
+      <ul class="nav-links">
+        <li><a href="/" class={pathname === '/' ? 'active' : ''}>Projects</a></li>
+        <li><a href="/about" class={pathname === '/about' ? 'active' : ''}>About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <slot />
+
+  <footer class="site-footer">
+    Built with curiosity &amp; AI assistance &nbsp;·&nbsp;
+    <a href="https://github.com/xykonnn" target="_blank">github.com/xykonnn</a>
+  </footer>
+
+</body>
+</html>

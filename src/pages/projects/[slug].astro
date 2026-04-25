@@ -1,0 +1,251 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map(p => ({
+    params: { slug: p.slug },
+    props: { project: p },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await project.render();
+const { title, description, tags, status, url, tech } = project.data;
+
+const statusLabel = { live: 'Live', wip: 'In Progress', concept: 'Concept' }[status];
+---
+
+<Base title={title} description={description}>
+  <div class="project-page container">
+
+    <nav class="breadcrumb">
+      <a href="/">Projects</a>
+      <span class="sep">›</span>
+      <span>{title}</span>
+    </nav>
+
+    <header class="project-header">
+      <div class="project-meta">
+        <span class={`status status-${status}`}>{statusLabel}</span>
+        <span class="meta-sep">·</span>
+        <div class="tag-row">
+          {tags.map(t => <span class="tag">{t}</span>)}
+        </div>
+      </div>
+
+      <h1>{title}</h1>
+      <p class="project-lead">{description}</p>
+
+      <div class="project-actions">
+        {url && (
+          <a href={url} target="_blank" rel="noopener" class="btn-primary">
+            Visit project
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+              <polyline points="15 3 21 3 21 9"/>
+              <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+          </a>
+        )}
+        <a href="/" class="btn-ghost">← All projects</a>
+      </div>
+
+      <div class="ornament-rule" style="margin-top: 36px;">
+        <span class="line"></span>
+        <span class="diamond"></span>
+        <span class="line"></span>
+      </div>
+    </header>
+
+    <div class="project-body">
+      <article class="prose">
+        <Content />
+      </article>
+
+      {tech && tech.length > 0 && (
+        <aside class="tech-sidebar">
+          <h3>Tech Stack</h3>
+          <ul class="tech-list">
+            {tech.map((t: string) => <li>{t}</li>)}
+          </ul>
+        </aside>
+      )}
+    </div>
+
+  </div>
+</Base>
+
+<style>
+  .project-page {
+    padding-top: 40px;
+    padding-bottom: 80px;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+    margin-bottom: 36px;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .breadcrumb a { color: var(--ink-muted); transition: color 0.2s; }
+  .breadcrumb a:hover { color: var(--accent); text-decoration: none; }
+  .sep { opacity: 0.5; }
+
+  .project-header { margin-bottom: 48px; }
+
+  .project-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .meta-sep { color: var(--rule); }
+  .tag-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .project-header h1 {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    letter-spacing: 0.06em;
+    margin-bottom: 14px;
+  }
+
+  .project-lead {
+    font-size: 1.1rem;
+    color: var(--ink-muted);
+    font-weight: 300;
+    font-style: italic;
+    max-width: 560px;
+    line-height: 1.6;
+  }
+
+  .project-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 22px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 2px;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .btn-primary:hover {
+    background: #6e1a0d;
+    text-decoration: none;
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    transition: color 0.2s;
+  }
+  .btn-ghost:hover { color: var(--accent); text-decoration: none; }
+
+  .project-body {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 48px;
+    align-items: start;
+  }
+
+  /* Prose styles */
+  .prose {
+    font-size: 1rem;
+    color: var(--ink);
+    line-height: 1.75;
+  }
+  .prose :global(h2) {
+    font-size: 1.1rem;
+    letter-spacing: 0.06em;
+    margin: 36px 0 12px;
+    color: var(--ink);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule-light);
+  }
+  .prose :global(p) {
+    margin-bottom: 16px;
+    font-weight: 300;
+    color: #3a2e24;
+  }
+  .prose :global(ul), .prose :global(ol) {
+    margin: 0 0 16px 20px;
+    color: #3a2e24;
+    font-weight: 300;
+  }
+  .prose :global(li) { margin-bottom: 6px; }
+  .prose :global(em) { color: var(--ink-muted); }
+  .prose :global(strong) { font-weight: 600; color: var(--ink); }
+  .prose :global(code) {
+    font-size: 0.85em;
+    background: var(--rule-light);
+    padding: 1px 6px;
+    border-radius: 2px;
+    font-family: monospace;
+  }
+
+  /* Tech sidebar */
+  .tech-sidebar {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: sticky;
+    top: 80px;
+  }
+  .tech-sidebar h3 {
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule-light);
+  }
+  .tech-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .tech-list li {
+    font-size: 0.88rem;
+    color: var(--ink-muted);
+    font-weight: 300;
+    padding-left: 12px;
+    position: relative;
+  }
+  .tech-list li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  @media (max-width: 600px) {
+    .project-body { grid-template-columns: 1fr; }
+    .tech-sidebar { position: static; }
+  }
+</style>

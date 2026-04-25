@@ -1,0 +1,78 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="About" description="About xykonnn — VFX wrangler, GM, vibe-coder.">
+  <div class="about-page container">
+
+    <header class="about-header">
+      <h1>About</h1>
+      <div class="ornament-rule" style="max-width: 200px; margin-top: 20px;">
+        <span class="line"></span>
+        <span class="diamond"></span>
+        <span class="line"></span>
+      </div>
+    </header>
+
+    <div class="about-body">
+      <p>
+        I'm a VFX on-set technician and wrangler based in Prague, working on international productions.
+        When I'm not on set I run Pathfinder 2e campaigns and occasionally build tools to make that easier.
+      </p>
+      <p>
+        Most of the projects here started as personal itch-scratching — something I needed that didn't exist,
+        or existed but not quite right. Built with AI assistance and enough code knowledge to steer it properly.
+      </p>
+      <p>
+        The PF2e tools in particular exist because running games generates a surprising number of small
+        logistical problems that software can solve.
+      </p>
+
+      <div class="section-label" style="margin-top: 40px;"><h3>Elsewhere</h3></div>
+      <ul class="links">
+        <li><a href="https://github.com/xykonnn" target="_blank">GitHub</a> — code</li>
+        <li><a href="https://gamemasternotes.com" target="_blank">Game Master Notes</a> — campaign notes &amp; GM references</li>
+      </ul>
+    </div>
+
+  </div>
+</Base>
+
+<style>
+  .about-page {
+    max-width: 580px;
+    padding-top: 60px;
+    padding-bottom: 80px;
+    animation: fadeUp 0.4s ease both;
+  }
+  .about-header {
+    margin-bottom: 44px;
+  }
+  .about-header h1 {
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    letter-spacing: 0.1em;
+  }
+  .about-body p {
+    font-size: 1rem;
+    font-weight: 300;
+    color: #3a2e24;
+    line-height: 1.75;
+    margin-bottom: 18px;
+  }
+  .links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .links li {
+    font-size: 0.95rem;
+    color: var(--ink-muted);
+    font-weight: 300;
+  }
+  .links a {
+    color: var(--accent);
+    font-weight: 400;
+  }
+</style>

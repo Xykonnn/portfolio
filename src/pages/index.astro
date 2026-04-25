@@ -1,0 +1,205 @@
+---
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+
+// Load and sort projects
+const allProjects = await getCollection('projects');
+const projects = allProjects
+  .sort((a, b) => (a.data.order ?? 99) - (b.data.order ?? 99));
+
+const webProjects  = projects.filter(p => p.data.tags.includes('web'));
+const pf2eProjects = projects.filter(p => p.data.tags.includes('pf2e') && !p.data.tags.includes('web'));
+---
+
+<Base title="Projects">
+  <header class="hero">
+    <div class="container">
+      <svg class="sigil" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="24,3 45,14 45,34 24,45 3,34 3,14" stroke="#8b2010" stroke-width="1.5" fill="none"/>
+        <polygon points="24,3 24,17 13,21" stroke="#8b2010" stroke-width="1" fill="none" opacity="0.45"/>
+        <polygon points="24,3 24,17 35,21" stroke="#8b2010" stroke-width="1" fill="none" opacity="0.45"/>
+        <polygon points="13,21 24,17 35,21 35,31 24,38 13,31" stroke="#8b2010" stroke-width="1" fill="none" opacity="0.35"/>
+        <text x="24" y="32" text-anchor="middle" font-size="11" font-family="serif" fill="#8b2010" opacity="0.65">20</text>
+      </svg>
+      <h1>Projects</h1>
+      <p class="tagline">Vibe-coded tools &amp; experiments</p>
+      <div class="ornament-rule" style="max-width: 280px; margin: 28px auto 0;">
+        <span class="line"></span>
+        <span class="diamond"></span>
+        <span class="line"></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <div class="container">
+      <div class="filters">
+        <button class="filter active" data-filter="all">All</button>
+        <button class="filter" data-filter="web">Web & Apps</button>
+        <button class="filter" data-filter="pf2e">PF2e Tools</button>
+        <button class="filter" data-filter="wip">In Progress</button>
+        <button class="filter" data-filter="live">Live</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="container main-content">
+
+    <!-- Web & Apps -->
+    <div class="section" data-section="web">
+      <div class="section-label"><h3>Web &amp; Apps</h3></div>
+      <div class="grid" id="web-grid">
+        {webProjects.map((p, i) => (
+          <ProjectCard
+            title={p.data.title}
+            slug={p.slug}
+            description={p.data.description}
+            tags={p.data.tags}
+            status={p.data.status}
+            url={p.data.url}
+            index={i}
+          />
+        ))}
+      </div>
+    </div>
+
+    <!-- PF2e Tools -->
+    <div class="section" data-section="pf2e">
+      <div class="section-label"><h3>Pathfinder 2e Tools</h3></div>
+      <div class="grid" id="pf2e-grid">
+        {pf2eProjects.map((p, i) => (
+          <ProjectCard
+            title={p.data.title}
+            slug={p.slug}
+            description={p.data.description}
+            tags={p.data.tags}
+            status={p.data.status}
+            url={p.data.url}
+            index={i}
+          />
+        ))}
+      </div>
+    </div>
+
+  </main>
+</Base>
+
+<style>
+  .hero {
+    text-align: center;
+    padding: 60px 24px 44px;
+  }
+  .sigil {
+    width: 44px; height: 44px;
+    margin-bottom: 20px;
+    opacity: 0.85;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+  }
+  .tagline {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: var(--ink-muted);
+    font-style: italic;
+  }
+
+  .filter-bar {
+    border-top: 1px solid var(--rule-light);
+    border-bottom: 1px solid var(--rule-light);
+    background: var(--bg-card);
+    padding: 12px 0;
+    position: sticky;
+    top: 52px;
+    z-index: 9;
+  }
+  .filters {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .filter {
+    font-family: 'Cinzel', serif;
+    font-size: 0.63rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    color: var(--ink-muted);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.18s;
+  }
+  .filter:hover,
+  .filter.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .main-content {
+    padding-top: 48px;
+    padding-bottom: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+
+  .section { transition: opacity 0.2s; }
+  .section.hidden { display: none; }
+
+  @media (max-width: 480px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  const filters = document.querySelectorAll<HTMLButtonElement>('.filter');
+  const allCards = document.querySelectorAll<HTMLElement>('.card');
+  const sections = document.querySelectorAll<HTMLElement>('.section');
+
+  filters.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filters.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.filter!;
+
+      if (f === 'all') {
+        sections.forEach(s => s.classList.remove('hidden'));
+        allCards.forEach(c => c.style.display = '');
+        return;
+      }
+
+      if (f === 'web') {
+        sections.forEach(s => s.classList.toggle('hidden', s.dataset.section !== 'web'));
+        allCards.forEach(c => c.style.display = '');
+        return;
+      }
+
+      if (f === 'pf2e') {
+        sections.forEach(s => s.classList.toggle('hidden', s.dataset.section !== 'pf2e'));
+        allCards.forEach(c => c.style.display = '');
+        return;
+      }
+
+      // live / wip filter — show all sections, filter cards
+      sections.forEach(s => s.classList.remove('hidden'));
+      allCards.forEach(card => {
+        const tags = (card.dataset.tags || '').split(',');
+        const status = card.querySelector('.status')?.classList.contains(`status-${f}`);
+        card.style.display = status ? '' : 'none';
+      });
+    });
+  });
+</script>
