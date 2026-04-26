@@ -6,7 +6,7 @@ interface Props {
   description?: string;
 }
 
-const { title, description = 'Vibe-coded tools and small projects by xykonnn.' } = Astro.props;
+const { title, description = 'Tools and small projects' } = Astro.props;
 const pathname = Astro.url.pathname;
 ---
 
@@ -35,8 +35,7 @@ const pathname = Astro.url.pathname;
 
   <slot />
 
-  <footer class="site-footer">
-    Built with curiosity &amp; AI assistance &nbsp;·&nbsp;
+  <footer class="site-footer"> &nbsp;·&nbsp;
     <a href="https://github.com/xykonnn" target="_blank">github.com/xykonnn</a>
   </footer>
 
